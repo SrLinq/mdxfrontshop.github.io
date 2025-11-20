@@ -151,6 +151,7 @@ body {
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
+  height: 100%;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -161,13 +162,18 @@ body {
 
 .product-card img {
   width: 100%;
-  height: auto;
+  height: 200px;
+  object-fit: cover;
   border-radius: 10px;
   margin-bottom: 1rem;
 }
 
 .product-card .details {
   margin-bottom: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
 .product-card h1 {
@@ -187,6 +193,7 @@ body {
   border: none;
   border-radius: 8px;
   padding: 0.6rem 1rem;
+  margin-top: auto;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.1s;
 }
@@ -197,6 +204,12 @@ body {
 
 .product-card button:active {
   transform: scale(0.97);
+}
+
+.product-card button:disabled {
+  background-color: #b0b0b0;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* === Responsive Design === */
@@ -225,7 +238,7 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 1rem;
-  align-items: start;
+  align-items: stretch;
 }
 
 /* On wider screens, ensure the grid spans both columns of #app */
@@ -238,7 +251,7 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 1rem;
-  align-items: start;
+  align-items: stretch;
 }
 button {
   background-color: #0077ff;

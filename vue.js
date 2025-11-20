@@ -47,9 +47,9 @@ const { createApp } = Vue;
           
 
             if (this.activeFilter === "in-stock") {
-              products = products.filter((product) => product.count > 0);
+              products = products.filter((product) => product.stock > 0);
             } else if (this.activeFilter === "out-of-stock") {
-              products = products.filter((product) => product.count === 0);
+              products = products.filter((product) => product.stock === 0);
             } else if (
               this.activeFilter === "location" &&
               this.selectedLocations.length
@@ -111,14 +111,15 @@ const { createApp } = Vue;
           cartDetails() {
             const counts = new Map();
             this.cart.forEach((product) => {
-              const existing = counts.get(product.id);
+              const existing = counts.get(product._id);
               if (existing) {
-                existing.count += 1;
+                existing.stock += 1;
               } else {
-                counts.set(product.id, {
-                  id: product.id,
+                counts.set(product._id, {
+                  id: product._id,
                   name: product.name,
-                  count: 1,
+                  price: product.price,
+                  stock: 1,
                 });
               }
             });
@@ -148,21 +149,21 @@ const { createApp } = Vue;
             this.goToPage("summary");
           },
           addToCart(product) {
-            if (product.count <= 0) {
+            if (product.stock <= 0) {
               return;
             }
             this.cart.push({
-              id: product.id,
+              id: product._id,
               name: product.name,
               price: product.price,
             });
-            product.count -= 1;
+            product.stock -= 1;
           },
           deleteFromCart(product) {
             this.cart.shift(product);
-            const match = this.products.find((item) => item.id === product.id);
+            const match = this.products.find((item) => item._id === product._id);
             if (match) {
-              match.count += 1;
+              match.stock += 1;
             }
           },
         },

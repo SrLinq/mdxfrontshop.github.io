@@ -77,7 +77,7 @@
             :key="product.id"
             class="product-card"
           >
-            <img :src="product.image" :alt="`${product.name} preview`" />
+            <img :src="product.imageUrls" :alt="`${product.name} preview`" />
             <div class="details">
               <h1>{{ product.name }}</h1>
               <p>{{ product.about }}</p>
@@ -87,10 +87,10 @@
             </div>
             <button
               type="button"
-              v-if="product.count > 0"
+              :disabled="product.stock <= 0"
               @click="addToCart(product)"
             >
-              Add to cart
+              {{ product.stock > 0 ? "Add to cart" : "Out of stock" }}
             </button>
           </div>
         </section>
@@ -113,8 +113,8 @@
         <ul class="cart-list" v-if="cartCount">
           <li v-for="item in cartDetails" :key="item.id">
             <span>{{item.name }}</span>
-            <p>{{Number(item.price*item.count)}}</p>
-            <span class="cart-count">×{{ item.count }}</span>
+            <p>{{Number(item.price*item.stock)}}</p>
+            <span class="cart-count">×{{ item.stock }}</span>
             <button @click="deleteFromCart(item)">Delete item</button>
           </li>
         </ul>
@@ -179,7 +179,7 @@
         <ul class="cart-list" v-if="cartCount">
           <li v-for="item in cartDetails" :key="item.id">
             <span>{{ item.name }}</span>
-            <span class="cart-count">×{{ item.count }}</span>
+            <span class="cart-count">×{{ item.stock }}</span>
           </li>
         </ul>
         <p>Total: {{ overallPrice }}</p>
