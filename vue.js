@@ -20,8 +20,8 @@ const { createApp } = Vue;
             selectedLocations: []
           };
         },
-        mounted(){
-        this.loadProducts()
+        async created(){
+        await this.loadProducts()
         },
         computed: {
           availableLocations() {
@@ -130,7 +130,7 @@ const { createApp } = Vue;
         },
         methods: {
         async loadProducts(){
-        this.products=await get("/collection/Lessons")
+        this.products=await apiFunc.get("/collection/Lessons")
         },
           goToPage(page) {
             this.currentPage = page;
