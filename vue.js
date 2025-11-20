@@ -6,45 +6,7 @@ const { createApp } = Vue;
           return {
             productsss:[],
             searchTerm: "",
-            products: [
-              {
-                id: 1,
-                name: "Small Toy",
-                description: "Just a small toy for kids — durable and fun.",
-                image: "0.jpeg",
-                 location:"Rome",
-                count: 0,
-                price: 500,
-              },
-              {
-                id: 6,
-                name: "A Toy",
-                description: "Just a small toy for kids — durable and fun.",
-                image: "0.jpeg",
-                 location:"London",
-                count: 7,
-                price: 400,
-              },
-              {
-                id: 2,
-                name: "Puzzle Blocks",
-                description:
-                  "Brightly colored blocks that develop motor skills.",
-                image: "0.jpeg",
-                 location:"Dubai",
-                count: 1,
-                price: 300,
-              },
-              {
-                id: 3,
-                name: "Story Book",
-                description: "An illustrated bedtime story for young readers.",
-                image: "0.jpeg",
-                location:"Dubai",
-                count: 4,
-                price: 100,
-              },
-            ],
+            products: [],
             cart: [],
             currentPage: "catalog",
             activeFilter: "all",
@@ -59,7 +21,8 @@ const { createApp } = Vue;
           };
         },
         mounted(){
-            
+            const a= apiFunc.get("/collection/Lessons")
+            this.products.push(a)
         },
         computed: {
           availableLocations() {
@@ -73,13 +36,15 @@ const { createApp } = Vue;
             let products = this.products;
 
             if (term) {
-              products = products.filter((product) =>
-                product.name.toLowerCase().includes(term)
-              );
+              products = products.filter((product) => {
+                const nameMatch = (product.name || "").toLowerCase().includes(term);
+                const locationMatch = (product.location || "").toLowerCase().includes(term);
+                return nameMatch || locationMatch;
+              });
             }
             
                 
-             products= products.filter((product)=>this.minPrice<=product.price && product.price<=this.maxPrice)
+             products = products.filter((product)=>this.minPrice<=product.price && product.price<=this.maxPrice)
           
 
             if (this.activeFilter === "in-stock") {
@@ -98,6 +63,12 @@ const { createApp } = Vue;
            
             const sorted = [...products];
             switch (this.activeSort) {
+              case "place-asc":
+                 sorted.sort((a,b)=>a.location.localeCompare(b.location))
+                 break;
+              case"place-desc":
+                   sorted.sort((a,b)=>b.location.localeCompare(a.location))
+                   break
               case "name-desc":
                 sorted.sort((a, b) => b.name.localeCompare(a.name));
                 break;
@@ -114,11 +85,17 @@ const { createApp } = Vue;
             return sorted;
           },
           isDetailsComplete() {
+            const name = this.customerName.trim();
+            const phone = this.customerPhone.trim();
+            const email = this.customerEmail.trim();
+            const address = this.customerAddress.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const phoneRegex = /^\+?[0-9\s\-()]{7,}$/;
             return Boolean(
-              this.customerName.trim() &&
-                this.customerPhone.trim() &&
-                this.customerEmail.trim() &&
-                this.customerAddress.trim()
+              name &&
+                address &&
+                emailRegex.test(email) &&
+                phoneRegex.test(phone)
             );
           },
           cartCount() {
@@ -181,7 +158,6 @@ const { createApp } = Vue;
             product.count -= 1;
           },
           deleteFromCart(product) {
-            console.log(product);
             this.cart.shift(product);
             const match = this.products.find((item) => item.id === product.id);
             if (match) {

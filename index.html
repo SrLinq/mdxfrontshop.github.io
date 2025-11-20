@@ -9,7 +9,6 @@
   </head>
   <body>
     <div id="app">
-      <!-- CATALOG PAGE -->
       <div v-show="currentPage === 'catalog'" class="page page--catalog">
         <form class="search-form" @submit.prevent>
           <input
@@ -40,6 +39,8 @@
           <select id="sort-select" v-model="activeSort">
             <option value="name-asc">Name A → Z</option>
             <option value="name-desc">Name Z → A</option>
+            <option value="place-asc">Place A → Z</option>
+            <option value="place-desc">Place Z → A</option>
             <option value="price-asc">Price low → high</option>
             <option value="price-desc">Price high → low</option>
           </select>
@@ -79,9 +80,9 @@
             <img :src="product.image" :alt="`${product.name} preview`" />
             <div class="details">
               <h1>{{ product.name }}</h1>
-              <p>{{ product.description }}</p>
+              <p>{{ product.about }}</p>
               <p>{{product.location}}</p>
-              <p>Left: {{ product.count }}</p>
+              <p>Left spaces: {{ product.stock }}</p>
               <p>Price: {{product.price}}</p>
             </div>
             <button
@@ -94,8 +95,6 @@
           </div>
         </section>
       </div>
-
-      <!-- CART PAGE -->
       <div v-show="currentPage === 'cart'" class="page page--cart">
         <form class="search-form" @submit.prevent>
           <div class="button-group">
@@ -113,7 +112,8 @@
 
         <ul class="cart-list" v-if="cartCount">
           <li v-for="item in cartDetails" :key="item.id">
-            <span>{{ item.name }}</span>
+            <span>{{item.name }}</span>
+            <p>{{Number(item.price*item.count)}}</p>
             <span class="cart-count">×{{ item.count }}</span>
             <button @click="deleteFromCart(item)">Delete item</button>
           </li>

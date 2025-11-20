@@ -1,6 +1,6 @@
 class ApiFetch {
   constructor() {
-    this.baseUrl = "http://localhost:3000/";
+    this.baseUrl = "https://mdxbackshop.onrender.com";
   }
 
   async get(url) {
