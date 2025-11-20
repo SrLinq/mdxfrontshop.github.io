@@ -31,17 +31,8 @@ const { createApp } = Vue;
           },
             
          filteredProducts() {
-            const term = this.searchTerm.trim().toLowerCase();
             let products = this.products;
-
-            if (term) {
-              products = products.filter((product) => {
-                const nameMatch = (product.name || "").toLowerCase().includes(term);
-                const locationMatch = (product.location || "").toLowerCase().includes(term);
-                return nameMatch || locationMatch;
-              });
-            }
-            
+           
                 
              products = products.filter((product)=>this.minPrice<=product.price && product.price<=this.maxPrice)
           
@@ -130,8 +121,19 @@ const { createApp } = Vue;
           },
         },
         methods: {
+        async postOrder(){
+
+        },
         async loadProducts(){
         this.products=await apiFunc.get("/collection/Lessons")
+        },
+        async searchProducts(){
+          const term = this.searchTerm.trim();
+          if(!term){
+            await this.loadProducts();
+            return;
+          }
+          this.products = await apiFunc.get(`/collection/Lessons/search?search=${term}`);
         },
           goToPage(page) {
             this.currentPage = page;
@@ -148,7 +150,7 @@ const { createApp } = Vue;
             }
             this.goToPage("summary");
           },
-          addToCart(product) {
+         async  addToCart(product) {
             if (product.stock <= 0) {
               return;
             }
@@ -157,14 +159,13 @@ const { createApp } = Vue;
               name: product.name,
               price: product.price,
             });
-            product.stock -= 1;
+            await put(`/collection/Lessons/${match._id}`,{stock:-1})
+            await this.loadProducts()
           },
-          deleteFromCart(product) {
-            this.cart.shift(product);
+          async deleteFromCart(product) {
             const match = this.products.find((item) => item._id === product._id);
-            if (match) {
-              match.stock += 1;
-            }
+            await put(`/collection/Lessons/${match._id}`,{stock:1})
+            await this.loadProducts()
           },
         },
       }).mount("#app");
