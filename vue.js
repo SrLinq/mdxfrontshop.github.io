@@ -155,16 +155,17 @@ const { createApp } = Vue;
               return;
             }
             this.cart.push({
-              id: product._id,
+              _id: product._id,
               name: product.name,
               price: product.price,
             });
-            await put(`/collection/Lessons/${match._id}`,{stock:-1})
+            await apiFunc.put(`/collection/Lessons/${product._id}`,{stock:-1})
             await this.loadProducts()
           },
           async deleteFromCart(product) {
-            const match = this.products.find((item) => item._id === product._id);
-            await put(`/collection/Lessons/${match._id}`,{stock:1})
+            const index = this.cart.findIndex((item) => item._id === product._id || item._id===product._id);
+            const [removed]= this.cart.splice(index,1)
+            await apiFunc.put(`/collection/Lessons/${removed._id}`,{stock:1})
             await this.loadProducts()
           },
         },

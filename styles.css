@@ -242,7 +242,7 @@ body {
 }
 
 /* On wider screens, ensure the grid spans both columns of #app */
-@media (min-width: 700px) {
+@media (min-width: 700px) { 
   .products-grid {
     grid-column: 1 / -1;
   }

@@ -29,6 +29,19 @@ class ApiFetch {
   return response.json()
   }
 
+  async put(url, data) {
+    const response = await fetch(`${this.baseUrl}${url}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const message = await response.text();
+      throw new Error(` request failed: ${response.status} ${message}`);
+    }
+    return response.json();
+  }
+
   async del(url) {
     const response = await fetch(`${this.baseUrl}${url}`, {
       method: "DELETE",
