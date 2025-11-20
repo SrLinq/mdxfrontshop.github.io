@@ -21,7 +21,7 @@ const { createApp } = Vue;
           };
         },
         mounted(){
-        loadProducts()
+        this.loadProducts()
         },
         computed: {
           availableLocations() {
