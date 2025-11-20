@@ -21,7 +21,7 @@ const { createApp } = Vue;
           };
         },
         mounted(){
-        
+        loadProducts()
         },
         computed: {
           availableLocations() {
@@ -129,7 +129,9 @@ const { createApp } = Vue;
           },
         },
         methods: {
-        
+        async loadProducts(){
+        this.products=await get("/collection/Lessons")
+        },
           goToPage(page) {
             this.currentPage = page;
           },
