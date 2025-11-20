@@ -21,8 +21,7 @@ const { createApp } = Vue;
           };
         },
         mounted(){
-            const a= apiFunc.get("/collection/Lessons")
-            this.products.push(a)
+        
         },
         computed: {
           availableLocations() {
