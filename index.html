@@ -14,6 +14,7 @@
         <div>
           <p class="toolbar__label">Lesson catalog</p>
           <h1>Find your next lesson</h1>
+          <i class="fa-solid fa-person-chalkboard"></i>
           <p class="muted">
             Browse, filter, add to cart, and place your order in a few steps.
           </p>
@@ -31,7 +32,6 @@
               @input="searchProducts"
             />
             <div class="button-group">
-              <button type="submit">Search</button>
               <button type="button" aria-label="Open cart" @click="goToPage('cart')">
                 <i class="fa-solid fa-basket-shopping"></i>
                 Cart Items ({{ cartCount }})
@@ -120,6 +120,7 @@
               <h2>Review items</h2>
             </div>
             <button type="button" aria-label="Show products" @click="goToPage('catalog')">
+              <i class="fa-solid fa-arrow-left"></i>
               Back to products
             </button>
           </div>
@@ -138,7 +139,9 @@
               <div class="summary-item-right">
                 <span class="cart-count">×{{ item.stock }}</span>
                 <span class="cart-total">${{ Number(item.price * item.stock || 0).toFixed(2) }}</span>
-                <button type="button" @click="deleteFromCart(item)">Delete</button>
+                <button type="button" @click="deleteFromCart(item)">
+                 <i class="fa-solid fa-minus"></i>
+                  Delete</button>
               </div>
             </li>
           </ul>
