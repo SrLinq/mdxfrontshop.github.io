@@ -3,318 +3,332 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Shop Card</title>
+    <title>Lesson Shop</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://kit.fontawesome.com/ec5e76a6c7.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="./styles.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-      integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
   </head>
   <body>
     <div id="app">
-      <div v-show="currentPage === 'catalog'" class="page page--catalog">
-        <form class="search-form" @submit.prevent="searchProducts">
-          <input
-            v-model="searchTerm"
-            type="text"
-            placeholder="Search products…"
-            aria-label="Search products"
-            @input="searchProducts"
-          />
-          <div class="button-group">
-            <button type="button" aria-label="Open cart" @click="goToPage('cart')">
-             <i class="fa-solid fa-basket-shopping"></i> Cart Items ({{ cartCount }})
-            </button>
-          </div>
-        </form>
-
-        <div class="toolbar">
-          <label class="toolbar__label" for="filter-select">Filter: </label>
-          <select id="filter-select" v-model="activeFilter">
-            <option value="all">All products</option>
-            <option class="toolbar__label" value="in-stock">In stock only</option>
-            <option value="location">Location</option>
-            <option value="out-of-stock">Out of stock</option>
-          </select>
-          <label class="toolbar__label" for="sort-select">Sort: </label>
-          <select id="sort-select" v-model="activeSort">
-            <option value="name-asc">Name A → Z</option>
-            <option value="name-desc">Name Z → A</option>
-            <option value="place-asc">Place A → Z</option>
-            <option value="place-desc">Place Z → A</option>
-            <option value="price-asc">Price low → high</option>
-            <option value="price-desc">Price high → low</option>
-          </select>
-        </div>
-        <div v-show="activeFilter === 'location'">
-          <label v-for="locationOption in availableLocations" :key="locationOption">
-            <input
-              v-model="selectedLocations"
-              type="checkbox"
-              :value="locationOption"
-            />{{ locationOption }}
-          </label>
-        </div>
+      <header class="search-form" aria-label="Navigation">
         <div>
-          <form @submit.prevent class="range-filters">
+          <p class="toolbar__label">Lesson catalog</p>
+          <h1>Find your next lesson</h1>
+          <p class="muted">
+            Browse, filter, add to cart, and place your order in a few steps.
+          </p>
+        </div>
+      </header>
+
+      <main>
+        <section v-show="currentPage === 'catalog'" class="page page--catalog" aria-label="Catalog">
+          <form class="search-form" @submit.prevent="searchProducts">
             <input
-              v-model="minPrice"
+              v-model="searchTerm"
+              type="text"
+              placeholder="Search lessons…"
+              aria-label="Search products"
+              @input="searchProducts"
+            />
+            <div class="button-group">
+              <button type="submit">Search</button>
+              <button type="button" aria-label="Open cart" @click="goToPage('cart')">
+                <i class="fa-solid fa-basket-shopping"></i>
+                Cart Items ({{ cartCount }})
+              </button>
+            </div>
+          </form>
+
+          <div class="toolbar" role="group" aria-label="Filters">
+            <label class="toolbar__label" for="filter-select">Filter:</label>
+            <select id="filter-select" v-model="activeFilter">
+              <option value="all">All products</option>
+              <option value="in-stock">In stock only</option>
+              <option value="location">By location</option>
+              <option value="out-of-stock">Out of stock</option>
+            </select>
+
+            <label class="toolbar__label" for="sort-select">Sort:</label>
+            <select id="sort-select" v-model="activeSort">
+              <option value="name-asc">Name A → Z</option>
+              <option value="name-desc">Name Z → A</option>
+              <option value="place-asc">Place A → Z</option>
+              <option value="place-desc">Place Z → A</option>
+              <option value="price-asc">Price low → high</option>
+              <option value="price-desc">Price high → low</option>
+            </select>
+          </div>
+
+          <div v-if="activeFilter === 'location'" class="range-filters" aria-label="Location filters">
+            <label v-for="locationOption in availableLocations" :key="locationOption">
+              <input
+                v-model="selectedLocations"
+                type="checkbox"
+                :value="locationOption"
+              />
+              {{ locationOption }}
+            </label>
+          </div>
+
+          <div class="range-filters" aria-label="Price filters">
+            <input
+              v-model.number="minPrice"
               type="number"
+              min="0"
               placeholder="Min price"
               aria-label="Minimum price"
             />
             <input
-              v-model="maxPrice"
+              v-model.number="maxPrice"
               type="number"
+              min="0"
               placeholder="Max price"
               aria-label="Maximum price"
             />
-          </form>
-        </div>
-        <section class="products-grid">
-          <div
-            v-for="product in filteredProducts"
-            :key="product.id"
-            class="product-card"
-          >
-            <img :src="product.imageUrls" :alt="`${product.name} preview`" />
-            <div class="details">
-              <h1>{{ product.name }}</h1>
-              <p>{{ product.about }}</p>
-              <p>{{product.location}}</p>
-              <p>Left spaces: {{ product.stock }}</p>
-              <p>Price: {{product.price}}</p>
-            </div>
-            <button
-              type="button"
-              :disabled="product.stock <= 0"
-              @click="addToCart(product)"
-            >
-              {{ product.stock > 0 ? "Add to cart" : "Out of stock" }}
-            </button>
           </div>
-        </section>
-      </div>
-      <div v-show="currentPage === 'cart'" class="page page--cart">
-        <form class="search-form" @submit.prevent>
-          <div class="button-group">
-            <button
-              type="button"
-              aria-label="Show products"
-              @click="goToPage('catalog')"
+
+          <section class="products-grid" aria-label="Products">
+            <article
+              v-for="product in filteredProducts"
+              :key="product._id || product.id"
+              class="product-card"
             >
+              <img :src="product.imageUrls" :alt="`${product.name} preview`" />
+              <div class="details">
+                <h2>{{ product.name }}</h2>
+                <p>{{ product.about }}</p>
+                <p class="muted">Location: {{ product.location }}</p>
+                <p class="muted">Left spaces: {{ product.stock }}</p>
+                <p class="cart-total">${{ Number(product.price || 0).toFixed(2) }}</p>
+              </div>
+              <button
+                type="button"
+                :disabled="product.stock <= 0"
+                @click="addToCart(product)"
+              >
+                {{ product.stock > 0 ? 'Add to cart' : 'Out of stock' }}
+              </button>
+            </article>
+          </section>
+          <p v-if="!filteredProducts.length" class="cart-status">No products match your filters.</p>
+        </section>
+
+        <section v-show="currentPage === 'cart'" class="page page--cart" aria-label="Cart">
+          <div class="summary-header">
+            <div>
+              <p class="toolbar__label">Your basket</p>
+              <h2>Review items</h2>
+            </div>
+            <button type="button" aria-label="Show products" @click="goToPage('catalog')">
               Back to products
             </button>
           </div>
-        </form>
 
-        <p class="cart-status" aria-live="polite">{{ cartMessage }}</p>
+          <p class="cart-status" aria-live="polite">{{ cartMessage }}</p>
 
-        <ul class="cart-list" v-if="cartCount">
-          <li v-for="item in cartDetails" :key="item.id">
-            <img
-              v-if="item.imageUrls"
-              :src="item.imageUrls"
-              :alt="`${item.name} preview`"
-              class="cart-thumb"
-            />
-            <span>{{item.name }}</span>
-            <p>{{Number(item.price*item.stock)}}</p>
-            <span class="cart-count">×{{ item.stock }}</span>
-            <button @click="deleteFromCart(item)">Delete item</button>
-          </li>
-        </ul>
-        <div class="cart-total" v-if="cartCount">
-          <span>Total:</span>
-          <strong>${{ overallPriceFormatted }}</strong>
-        </div>
-        <button type="button" :disabled="!cartCount" @click="proceedToDetails">
-          Go to order
-        </button>
-      </div>
-      <div v-show="currentPage === 'details'" class="page page--details">
-        <h1>Enter your details</h1>
-        <section class="details-form">
-          <label for="customer-name">Your name</label>
-          <input
-            id="customer-name"
-            v-model="customerName"
-            type="text"
-            placeholder="Jane Doe"
-            aria-label="Your full name"
-          />
-          <label for="customer-phone">Your phone</label>
-          <input
-            id="customer-phone"
-            v-model="customerPhone"
-            type="tel"
-            placeholder="+1 555 123 4567"
-            aria-label="Your phone number"
-          />
-          <label for="customer-email">Your email</label>
-          <input
-            id="customer-email"
-            v-model="customerEmail"
-            type="email"
-            placeholder="you@example.com"
-            aria-label="Your email address"
-          />
-          <label for="customer-country">Country</label>
-          <input
-            id="customer-country"
-            v-model="customerCountry"
-            type="text"
-            placeholder="Country"
-            aria-label="Your country"
-          />
-          <label for="customer-city">City</label>
-          <input
-            id="customer-city"
-            v-model="customerCity"
-            type="text"
-            placeholder="City"
-            aria-label="Your city"
-          />
-          <label for="customer-postcode">Postcode</label>
-          <input
-            id="customer-postcode"
-            v-model="customerPostcode"
-            type="text"
-            placeholder="Postcode"
-            aria-label="Your postcode"
-          />
-          <label for="customer-address">Street address</label>
-          <textarea
-            id="customer-address"
-            v-model="customerAddress"
-            placeholder="123 Main St"
-            aria-label="Your street address"
-          ></textarea>
+          <ul class="cart-list" v-if="cartCount">
+            <li v-for="item in cartDetails" :key="item.id">
+              <div class="summary-item-left">
+                <img :src="item.imageUrls" :alt="`${item.name} preview`" class="cart-thumb" />
+                <div>
+                  <h3>{{ item.name }}</h3>
+                  <p class="muted">Price: ${{ Number(item.price || 0).toFixed(2) }}</p>
+                </div>
+              </div>
+              <div class="summary-item-right">
+                <span class="cart-count">×{{ item.stock }}</span>
+                <span class="cart-total">${{ Number(item.price * item.stock || 0).toFixed(2) }}</span>
+                <button type="button" @click="deleteFromCart(item)">Delete</button>
+              </div>
+            </li>
+          </ul>
+          <p class="cart-status" v-else>Pick a lesson to start checkout.</p>
+
+          <p class="cart-total">Total: ${{ overallPriceFormatted }}</p>
+          <div class="summary-actions">
+            <button class="primary" type="button" :disabled="!cartCount" @click="proceedToDetails">
+              Go to order
+            </button>
+            <div class="secondary-actions">
+              <button class="ghost" type="button" @click="goToPage('catalog')">Continue shopping</button>
+            </div>
+          </div>
         </section>
-        <div class="button-group">
-          <button
-            type="button"
-            :disabled="!isDetailsComplete"
-            @click="reviewOrder"
-          >
-            Save and go to order
-          </button>
-          <button type="button" @click="goToPage('cart')">Back to cart</button>
-        </div>
-      </div>
-      <div v-show="currentPage === 'summary'" class="page page--summary">
-        <div class="summary-card">
-          <header class="summary-header">
-            <div>
-              <p class="eyebrow">Order review</p>
-              <h2>Your details</h2>
-            </div>
-            <div class="tag">Secure checkout</div>
-          </header>
 
-          <div class="summary-grid">
-            <div>
-              <p class="label">Name</p>
-              <p class="value">{{ customerName || "—" }}</p>
-            </div>
-            <div>
-              <p class="label">Phone</p>
-              <p class="value">{{ customerPhone || "—" }}</p>
-            </div>
-            <div>
-              <p class="label">Email</p>
-              <p class="value">{{ customerEmail || "—" }}</p>
-            </div>
-            <div>
-              <p class="label">Country</p>
-              <p class="value">{{ customerCountry || "—" }}</p>
-            </div>
-            <div>
-              <p class="label">City</p>
-              <p class="value">{{ customerCity || "—" }}</p>
-            </div>
-            <div>
-              <p class="label">Postcode</p>
-              <p class="value">{{ customerPostcode || "—" }}</p>
-            </div>
-            <div class="full-row">
-              <p class="label">Address</p>
-              <p class="value">{{ customerAddress || "—" }}</p>
-            </div>
+        <section v-show="currentPage === 'details'" class="page page--details" aria-label="Details">
+          <h2>Enter your details</h2>
+          <section class="details-form">
+            <label for="customer-name">Your name</label>
+            <input
+              id="customer-name"
+              v-model="customerName"
+              type="text"
+              placeholder="Jane Doe"
+              aria-label="Your full name"
+            />
+
+            <label for="customer-phone">Your phone</label>
+            <input
+              id="customer-phone"
+              v-model="customerPhone"
+              type="tel"
+              placeholder="+1 555 123 4567"
+              aria-label="Your phone number"
+            />
+
+            <label for="customer-email">Your email</label>
+            <input
+              id="customer-email"
+              v-model="customerEmail"
+              type="email"
+              placeholder="you@example.com"
+              aria-label="Your email address"
+            />
+
+            <label for="customer-country">Country</label>
+            <input
+              id="customer-country"
+              v-model="customerCountry"
+              type="text"
+              placeholder="USA"
+              aria-label="Your country"
+            />
+
+            <label for="customer-city">City</label>
+            <input
+              id="customer-city"
+              v-model="customerCity"
+              type="text"
+              placeholder="San Francisco"
+              aria-label="Your city"
+            />
+
+            <label for="customer-postcode">Postcode</label>
+            <input
+              id="customer-postcode"
+              v-model="customerPostcode"
+              type="text"
+              placeholder="94105"
+              aria-label="Your postcode"
+            />
+
+            <label for="customer-address">Your address</label>
+            <textarea
+              id="customer-address"
+              v-model="customerAddress"
+              placeholder="123 Main St, Springfield"
+              aria-label="Your shipping address"
+            ></textarea>
+          </section>
+          <div class="button-group">
+            <button type="button" :disabled="!isDetailsComplete" @click="reviewOrder">
+              Save and go to order
+            </button>
+            <button type="button" @click="goToPage('cart')">Back to cart</button>
           </div>
+        </section>
 
-          <div class="summary-divider"></div>
-
-          <div class="summary-items">
-            <div class="summary-items__header">
-              <p class="label">Items ({{ cartCount }})</p>
-              <p class="label">Total: <span class="value">${{ overallPrice }}</span></p>
+        <section v-show="currentPage === 'summary'" class="page page--summary" aria-label="Summary">
+          <div class="summary-card">
+            <div class="summary-header">
+              <div>
+                <p class="toolbar__label">Order review</p>
+                <h2>Your details</h2>
+              </div>
+              <span class="tag">Total ${{ overallPriceFormatted }}</span>
             </div>
-            <ul class="summary-list" v-if="cartCount">
-              <li v-for="item in cartDetails" :key="item.id">
-                <div class="summary-item-left">
-                  <img
-                    v-if="item.imageUrls"
-                    :src="item.imageUrls"
-                    :alt="`${item.name} preview`"
-                    class="summary-thumb"
-                  />
-                  <div>
-                    <p class="value">{{ item.name }}</p>
-                    <p class="muted">Price: ${{ item.price }}</p>
+
+            <div class="summary-grid">
+              <div>
+                <p class="label">Name</p>
+                <p class="value">{{ customerName || '—' }}</p>
+              </div>
+              <div>
+                <p class="label">Phone</p>
+                <p class="value">{{ customerPhone || '—' }}</p>
+              </div>
+              <div>
+                <p class="label">Email</p>
+                <p class="value">{{ customerEmail || '—' }}</p>
+              </div>
+              <div>
+                <p class="label">Country</p>
+                <p class="value">{{ customerCountry || '—' }}</p>
+              </div>
+              <div>
+                <p class="label">City</p>
+                <p class="value">{{ customerCity || '—' }}</p>
+              </div>
+              <div>
+                <p class="label">Postcode</p>
+                <p class="value">{{ customerPostcode || '—' }}</p>
+              </div>
+              <div class="full-row">
+                <p class="label">Address</p>
+                <p class="value">{{ customerAddress || '—' }}</p>
+              </div>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-items">
+              <div class="summary-items__header">
+                <p class="label">Items</p>
+                <p class="value">{{ cartCount }} item(s)</p>
+              </div>
+              <ul class="summary-list" v-if="cartCount">
+                <li v-for="item in cartDetails" :key="item.id">
+                  <div class="summary-item-left">
+                    <img :src="item.imageUrls" :alt="`${item.name} preview`" class="summary-thumb" />
+                    <div>
+                      <p class="value">{{ item.name }}</p>
+                      <p class="muted">Quantity ×{{ item.stock }}</p>
+                    </div>
                   </div>
-                </div>
-                <div class="summary-item-right">
-                  <span class="chip">x{{ item.stock }}</span>
-                  <p class="value">${{ Number(item.price * item.stock) }}</p>
-                </div>
-              </li>
-            </ul>
-          </div>
+                  <div class="summary-item-right">
+                    <span class="chip">${{ Number(item.price * item.stock || 0).toFixed(2) }}</span>
+                  </div>
+                </li>
+              </ul>
+              <p class="muted" v-else>No items in your cart.</p>
+            </div>
 
-          <div class="summary-actions">
-            <button
-              class="primary"
-              type="button"
-              :disabled="!cartCount || !isDetailsComplete"
-              @click="postOrder"
-            >
-              Place order
-            </button>
-            <div class="secondary-actions">
-              <button type="button" class="ghost" @click="goToPage('details')">
-                Edit details
+            <div class="summary-actions">
+              <button class="primary" type="button" @click="postOrder" :disabled="!cartCount">
+                Place order
               </button>
-              <button type="button" class="ghost" @click="goToPage('catalog')">
-                Continue shopping
-              </button>
+              <div class="secondary-actions">
+                <button type="button" class="ghost" @click="goToPage('details')">
+                  Edit details
+                </button>
+                <button type="button" class="ghost" @click="goToPage('catalog')">
+                  Continue shopping
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div v-show="currentPage === 'success'" class="page page--success">
-        <div class="summary-card success-card">
-          <div class="success-icon">✓</div>
-          <h2>Order placed successfully</h2>
-          <p class="muted">
-            Thanks for your purchase. A confirmation has been recorded. You can keep shopping or refill your details anytime.
-          </p>
-          <div class="summary-actions">
-            <button class="primary" type="button" @click="goToPage('catalog')">
-              Back to catalog
-            </button>
-            <div class="secondary-actions">
-              <button type="button" class="ghost" @click="goToPage('details')">
-                Fill details again
+        </section>
+
+        <section v-show="currentPage === 'success'" class="page page--success" aria-label="Order placed">
+          <div class="summary-card success-card">
+            <div class="success-icon">✓</div>
+            <h2>Order placed successfully</h2>
+            <p class="muted">
+              Thanks for your purchase. A confirmation has been recorded.
+            </p>
+            <div class="summary-actions">
+              <button class="primary" type="button" @click="goToPage('catalog')">
+                Back to catalog
               </button>
+              <div class="secondary-actions">
+                <button type="button" class="ghost" @click="goToPage('details')">
+                  Fill details again
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
     <script src="apiFetch.js"></script>
     <script src="vue.js"></script>
