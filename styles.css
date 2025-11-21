@@ -251,13 +251,16 @@ body {
 }
 
 .product-card button {
-  align-self: flex-start;
+  display: block;
+  width: 100%;
+  align-self: stretch;
   background-color: #28a745;
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 0.6rem 1rem;
+  padding: 0.75rem 1rem;
   margin-top: auto;
+  text-align: center;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.1s;
 }
@@ -274,6 +277,63 @@ body {
   background-color: #b0b0b0;
   cursor: not-allowed;
   transform: none;
+}
+
+.product-card .quantity-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.product-card .quantity-stepper button {
+  width: 44px;
+  padding: 0.4rem;
+  font-weight: 700;
+}
+
+.product-card .quantity-stepper__value {
+  min-width: 32px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.quantity-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #eef4ff;
+  padding: 0.35rem 0.45rem;
+  border-radius: 12px;
+}
+
+.quantity-stepper button {
+  width: 40px;
+  padding: 0.35rem;
+  font-weight: 700;
+  background: #0d6efd;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+}
+
+.quantity-stepper__value {
+  min-width: 28px;
+  text-align: center;
+  font-weight: 700;
+  color: #0d3898;
+}
+
+.quantity-stepper button:disabled {
+  background: #b7cdfc;
+  color: #f5f8ff;
+  cursor: not-allowed;
+}
+
+.summary-item-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
 }
 
 .summary-card {

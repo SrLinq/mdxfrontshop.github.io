@@ -108,22 +108,21 @@ createApp({
       } in the cart.`;
     },
     cartDetails() {
-      const counts = new Map();
-      this.cart.forEach((product) => {
-        const existing = counts.get(product._id);
-        if (existing) {
-                existing.stock += 1;
-              } else {
-                counts.set(product._id, {
-                  id: product._id,
-                  name: product.name,
-                  price: product.price,
-                  imageUrls: product.imageUrls,
-                  stock: 1,
-                });
-              }
-            });
-            return Array.from(counts.values());
+      const grouped = this.cart.reduce((acc, product) => {
+        const id = product._id || product.id;
+        if (!id) return acc;
+        const existing = acc[id] || {
+          id,
+          name: product.name,
+          price: product.price,
+          imageUrls: product.imageUrls,
+          stock: 0,
+        };
+        existing.stock += 1;
+        acc[id] = existing;
+        return acc;
+      }, {});
+      return Object.values(grouped);
     },
     overallPrice() {
       return this.cart.reduce(
@@ -136,6 +135,11 @@ createApp({
     },
   },
   methods: {
+    cartCounts(product) {
+      const id = product._id || product.id;
+      if (!id) return 0;
+      return this.cart.filter((item) => (item._id || item.id) === id).length;
+    },
     async postOrder() {
       if (!this.cartCount || !this.isDetailsComplete) return;
       const order = {
@@ -181,26 +185,36 @@ createApp({
       this.goToPage("summary");
     },
     async addToCart(product) {
-      if (product.stock <= 0) {
+      const productId = product._id || product.id;
+      if (!productId || product.stock <= 0) {
         return;
       }
       this.cart.push({
-        _id: product._id,
+        _id: productId,
         name: product.name,
         price: Number(product.price) || 0,
         imageUrls: product.imageUrls,
       });
-      await apiFunc.put(`/collection/Lessons/${product._id}`, { stock: -1 });
+      await apiFunc.put(`/collection/Lessons/${productId}`, { stock: -1 });
       await this.loadProducts();
     },
     async deleteFromCart(product) {
+      const productId = product._id || product.id;
+      if (!productId) return;
       const index = this.cart.findIndex(
-        (item) => item._id === product._id || item._id === product.id
+        (item) => (item._id || item.id) === productId
       );
       if (index === -1) return;
       const [removed] = this.cart.splice(index, 1);
       await apiFunc.put(`/collection/Lessons/${removed._id}`, { stock: 1 });
       await this.loadProducts();
+    },
+    async increaseCartItem(item) {
+      const product = this.products.find(
+        (product) => (product._id || product.id) === (item.id || item._id)
+      );
+      if (!product || product.stock <= 0) return;
+      await this.addToCart(product);
     },
     async resetCheckout() {
       this.cart = [];
@@ -217,8 +231,8 @@ createApp({
       this.selectedLocations = [];
       this.activeFilter = "all";
       this.activeSort = "name-asc";
-      await this.loadProducts();
       this.goToPage("success");
+      await this.loadProducts();
     },
   },
 }).mount("#app");

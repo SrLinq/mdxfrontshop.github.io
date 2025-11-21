@@ -17,7 +17,6 @@
           <i class="fa-solid fa-person-chalkboard"></i>
           <p class="muted">
             Browse, filter, add to cart, and place your order in a few steps.
-          </p>
         </div>
       </header>
 
@@ -102,12 +101,25 @@
                 <p class="cart-total">${{ Number(product.price || 0).toFixed(2) }}</p>
               </div>
               <button
+                v-if="!cartCounts(product)"
                 type="button"
                 :disabled="product.stock <= 0"
                 @click="addToCart(product)"
               >
                 {{ product.stock > 0 ? 'Add to cart' : 'Out of stock' }}
               </button>
+              <div v-else class="quantity-stepper" aria-label="Adjust quantity">
+                <button type="button" @click="deleteFromCart(product)" aria-label="Decrease quantity">-</button>
+                <span class="quantity-stepper__value">{{ cartCounts(product) }}</span>
+                <button
+                  type="button"
+                  :disabled="product.stock <= 0"
+                  @click="addToCart(product)"
+                  aria-label="Increase quantity"
+                >
+                  +
+                </button>
+              </div>
             </article>
           </section>
           <p v-if="!filteredProducts.length" class="cart-status">No products match your filters.</p>
@@ -137,11 +149,14 @@
                 </div>
               </div>
               <div class="summary-item-right">
-                <span class="cart-count">×{{ item.stock }}</span>
+                <div class="quantity-stepper" aria-label="Adjust quantity">
+                  <button type="button" @click="deleteFromCart(item)" aria-label="Decrease quantity">-</button>
+                  <span class="quantity-stepper__value">{{ item.stock }}</span>
+                  <button type="button" @click="increaseCartItem(item)" aria-label="Increase quantity">
+                    +
+                  </button>
+                </div>
                 <span class="cart-total">${{ Number(item.price * item.stock || 0).toFixed(2) }}</span>
-                <button type="button" @click="deleteFromCart(item)">
-                 <i class="fa-solid fa-minus"></i>
-                  Delete</button>
               </div>
             </li>
           </ul>
