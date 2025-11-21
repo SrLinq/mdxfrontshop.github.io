@@ -8,25 +8,17 @@ class ApiFetch {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
-    if (!response.ok) {
-      const message = await response.text();
-      throw new Error(` request failed: ${response.status} ${message}`);
-    }
-    return response.json();
+    return this.handleResponse(response);
   }
 
-  async post(url, data){
+  async post(url, data) {
     const response = await fetch(`${this.baseUrl}${url}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
 
-  if (!response.ok) {
-    const message = await response.text();
-    throw new Error(` request failed: ${response.status} ${message}`);
-  }
-  return response.json()
+    return this.handleResponse(response);
   }
 
   async put(url, data) {
@@ -35,11 +27,7 @@ class ApiFetch {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-    if (!response.ok) {
-      const message = await response.text();
-      throw new Error(` request failed: ${response.status} ${message}`);
-    }
-    return response.json();
+    return this.handleResponse(response);
   }
 
   async del(url) {
@@ -47,11 +35,20 @@ class ApiFetch {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     });
+    return this.handleResponse(response);
+  }
+
+  async handleResponse(response) {
+    const text = await response.text();
     if (!response.ok) {
-      const message = await response.text();
-      throw new Error(` request failed: ${response.status} ${message}`);
+      throw new Error(` request failed: ${response.status} ${text}`);
     }
-    return response.json();
+    if (!text) return null;
+    try {
+      return JSON.parse(text);
+    } catch (err) {
+      return text;
+    }
   }
 
 

@@ -6,6 +6,13 @@
     <title>Shop Card</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <link rel="stylesheet" href="./styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
   </head>
   <body>
     <div id="app">
@@ -20,7 +27,7 @@
           />
           <div class="button-group">
             <button type="button" aria-label="Open cart" @click="goToPage('cart')">
-              Cart Items ({{ cartCount }})
+             <i class="fa-solid fa-basket-shopping"></i> Cart Items ({{ cartCount }})
             </button>
           </div>
         </form>
@@ -53,20 +60,19 @@
           </label>
         </div>
         <div>
-          <form @submit.prevent>
-          <input
-            v-model="minPrice"
-            type="text"
-            placeholder="Search products…"
-            aria-label="Search products"
-          />
-           <input
-            v-model="maxPrice"
-            type="text"
-            placeholder="Search products…"
-            aria-label="Search products"
-
-          />
+          <form @submit.prevent class="range-filters">
+            <input
+              v-model="minPrice"
+              type="number"
+              placeholder="Min price"
+              aria-label="Minimum price"
+            />
+            <input
+              v-model="maxPrice"
+              type="number"
+              placeholder="Max price"
+              aria-label="Maximum price"
+            />
           </form>
         </div>
         <section class="products-grid">
@@ -110,13 +116,22 @@
 
         <ul class="cart-list" v-if="cartCount">
           <li v-for="item in cartDetails" :key="item.id">
+            <img
+              v-if="item.imageUrls"
+              :src="item.imageUrls"
+              :alt="`${item.name} preview`"
+              class="cart-thumb"
+            />
             <span>{{item.name }}</span>
             <p>{{Number(item.price*item.stock)}}</p>
             <span class="cart-count">×{{ item.stock }}</span>
             <button @click="deleteFromCart(item)">Delete item</button>
           </li>
         </ul>
-        <p>{{ overallPrice }}</p>
+        <div class="cart-total" v-if="cartCount">
+          <span>Total:</span>
+          <strong>${{ overallPriceFormatted }}</strong>
+        </div>
         <button type="button" :disabled="!cartCount" @click="proceedToDetails">
           Go to order
         </button>
@@ -148,12 +163,36 @@
             placeholder="you@example.com"
             aria-label="Your email address"
           />
-          <label for="customer-address">Your address</label>
+          <label for="customer-country">Country</label>
+          <input
+            id="customer-country"
+            v-model="customerCountry"
+            type="text"
+            placeholder="Country"
+            aria-label="Your country"
+          />
+          <label for="customer-city">City</label>
+          <input
+            id="customer-city"
+            v-model="customerCity"
+            type="text"
+            placeholder="City"
+            aria-label="Your city"
+          />
+          <label for="customer-postcode">Postcode</label>
+          <input
+            id="customer-postcode"
+            v-model="customerPostcode"
+            type="text"
+            placeholder="Postcode"
+            aria-label="Your postcode"
+          />
+          <label for="customer-address">Street address</label>
           <textarea
             id="customer-address"
             v-model="customerAddress"
-            placeholder="123 Main St, Springfield"
-            aria-label="Your shipping address"
+            placeholder="123 Main St"
+            aria-label="Your street address"
           ></textarea>
         </section>
         <div class="button-group">
@@ -168,27 +207,112 @@
         </div>
       </div>
       <div v-show="currentPage === 'summary'" class="page page--summary">
-        <h2>Your details</h2>
-        <p>Your name: {{ customerName || "—" }}</p>
-        <p>Your phone: {{ customerPhone || "—" }}</p>
-        <p>Your email: {{ customerEmail || "—" }}</p>
-        <p>Your address: {{ customerAddress || "—" }}</p>
-        <p>Your items</p>
-        <ul class="cart-list" v-if="cartCount">
-          <li v-for="item in cartDetails" :key="item.id">
-            <span>{{ item.name }}</span>
-            <span class="cart-count">×{{ item.stock }}</span>
-          </li>
-        </ul>
-        <p>Total: {{ overallPrice }}</p>
-        <button>Order</button>
-        <div class="button-group">
-          <button type="button" @click="goToPage('details')">
-            Edit details
-          </button>
-          <button type="button" @click="goToPage('catalog')">
-            Continue shopping
-          </button>
+        <div class="summary-card">
+          <header class="summary-header">
+            <div>
+              <p class="eyebrow">Order review</p>
+              <h2>Your details</h2>
+            </div>
+            <div class="tag">Secure checkout</div>
+          </header>
+
+          <div class="summary-grid">
+            <div>
+              <p class="label">Name</p>
+              <p class="value">{{ customerName || "—" }}</p>
+            </div>
+            <div>
+              <p class="label">Phone</p>
+              <p class="value">{{ customerPhone || "—" }}</p>
+            </div>
+            <div>
+              <p class="label">Email</p>
+              <p class="value">{{ customerEmail || "—" }}</p>
+            </div>
+            <div>
+              <p class="label">Country</p>
+              <p class="value">{{ customerCountry || "—" }}</p>
+            </div>
+            <div>
+              <p class="label">City</p>
+              <p class="value">{{ customerCity || "—" }}</p>
+            </div>
+            <div>
+              <p class="label">Postcode</p>
+              <p class="value">{{ customerPostcode || "—" }}</p>
+            </div>
+            <div class="full-row">
+              <p class="label">Address</p>
+              <p class="value">{{ customerAddress || "—" }}</p>
+            </div>
+          </div>
+
+          <div class="summary-divider"></div>
+
+          <div class="summary-items">
+            <div class="summary-items__header">
+              <p class="label">Items ({{ cartCount }})</p>
+              <p class="label">Total: <span class="value">${{ overallPrice }}</span></p>
+            </div>
+            <ul class="summary-list" v-if="cartCount">
+              <li v-for="item in cartDetails" :key="item.id">
+                <div class="summary-item-left">
+                  <img
+                    v-if="item.imageUrls"
+                    :src="item.imageUrls"
+                    :alt="`${item.name} preview`"
+                    class="summary-thumb"
+                  />
+                  <div>
+                    <p class="value">{{ item.name }}</p>
+                    <p class="muted">Price: ${{ item.price }}</p>
+                  </div>
+                </div>
+                <div class="summary-item-right">
+                  <span class="chip">x{{ item.stock }}</span>
+                  <p class="value">${{ Number(item.price * item.stock) }}</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="summary-actions">
+            <button
+              class="primary"
+              type="button"
+              :disabled="!cartCount || !isDetailsComplete"
+              @click="postOrder"
+            >
+              Place order
+            </button>
+            <div class="secondary-actions">
+              <button type="button" class="ghost" @click="goToPage('details')">
+                Edit details
+              </button>
+              <button type="button" class="ghost" @click="goToPage('catalog')">
+                Continue shopping
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-show="currentPage === 'success'" class="page page--success">
+        <div class="summary-card success-card">
+          <div class="success-icon">✓</div>
+          <h2>Order placed successfully</h2>
+          <p class="muted">
+            Thanks for your purchase. A confirmation has been recorded. You can keep shopping or refill your details anytime.
+          </p>
+          <div class="summary-actions">
+            <button class="primary" type="button" @click="goToPage('catalog')">
+              Back to catalog
+            </button>
+            <div class="secondary-actions">
+              <button type="button" class="ghost" @click="goToPage('details')">
+                Fill details again
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
