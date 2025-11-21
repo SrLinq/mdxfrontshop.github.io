@@ -109,10 +109,10 @@ createApp({
     },
     cartDetails() {
       const grouped = this.cart.reduce((acc, product) => {
-        const id = product._id || product.id;
+        const id = product._id;
         if (!id) return acc;
         const existing = acc[id] || {
-          id,
+          _id: id,
           name: product.name,
           price: product.price,
           imageUrls: product.imageUrls,
@@ -136,9 +136,9 @@ createApp({
   },
   methods: {
     cartCounts(product) {
-      const id = product._id || product.id;
+      const id = product._id;
       if (!id) return 0;
-      return this.cart.filter((item) => (item._id || item.id) === id).length;
+      return this.cart.filter((item) => item._id === id).length;
     },
     async postOrder() {
       if (!this.cartCount || !this.isDetailsComplete) return;
@@ -185,7 +185,7 @@ createApp({
       this.goToPage("summary");
     },
     async addToCart(product) {
-      const productId = product._id || product.id;
+      const productId = product._id;
       if (!productId || product.stock <= 0) {
         return;
       }
@@ -199,10 +199,10 @@ createApp({
       await this.loadProducts();
     },
     async deleteFromCart(product) {
-      const productId = product._id || product.id;
+      const productId = product._id;
       if (!productId) return;
       const index = this.cart.findIndex(
-        (item) => (item._id || item.id) === productId
+        (item) => item._id === productId
       );
       if (index === -1) return;
       const [removed] = this.cart.splice(index, 1);
@@ -210,9 +210,7 @@ createApp({
       await this.loadProducts();
     },
     async increaseCartItem(item) {
-      const product = this.products.find(
-        (product) => (product._id || product.id) === (item.id || item._id)
-      );
+      const product = this.products.find((product) => product._id === item._id);
       if (!product || product.stock <= 0) return;
       await this.addToCart(product);
     },

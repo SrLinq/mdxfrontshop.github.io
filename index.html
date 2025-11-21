@@ -89,7 +89,7 @@
           <section class="products-grid" aria-label="Products">
             <article
               v-for="product in filteredProducts"
-              :key="product._id || product.id"
+              :key="product._id"
               class="product-card"
             >
               <img :src="product.imageUrls" :alt="`${product.name} preview`" />
@@ -140,7 +140,7 @@
           <p class="cart-status" aria-live="polite">{{ cartMessage }}</p>
 
           <ul class="cart-list" v-if="cartCount">
-            <li v-for="item in cartDetails" :key="item.id">
+            <li v-for="item in cartDetails" :key="item._id">
               <div class="summary-item-left">
                 <img :src="item.imageUrls" :alt="`${item.name} preview`" class="cart-thumb" />
                 <div>
@@ -295,7 +295,7 @@
                 <p class="value">{{ cartCount }} item(s)</p>
               </div>
               <ul class="summary-list" v-if="cartCount">
-                <li v-for="item in cartDetails" :key="item.id">
+                <li v-for="item in cartDetails" :key="item._id">
                   <div class="summary-item-left">
                     <img :src="item.imageUrls" :alt="`${item.name} preview`" class="summary-thumb" />
                     <div>
