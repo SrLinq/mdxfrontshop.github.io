@@ -1,6 +1,7 @@
 const apiFunc = new ApiFetch();
-const { createApp } = Vue;
-createApp({
+
+new Vue({
+  el: "#app",
   data() {
     return {
       productsss: [],
@@ -125,10 +126,7 @@ createApp({
       return Object.values(grouped);
     },
     overallPrice() {
-      return this.cart.reduce(
-        (sum, item) => sum + Number(item.price || 0),
-        0
-      );
+      return this.cart.reduce((sum, item) => sum + Number(item.price || 0), 0);
     },
     overallPriceFormatted() {
       return this.overallPrice.toFixed(2);
@@ -201,9 +199,7 @@ createApp({
     async deleteFromCart(product) {
       const productId = product._id;
       if (!productId) return;
-      const index = this.cart.findIndex(
-        (item) => item._id === productId
-      );
+      const index = this.cart.findIndex((item) => item._id === productId);
       if (index === -1) return;
       const [removed] = this.cart.splice(index, 1);
       await apiFunc.put(`/collection/Lessons/${removed._id}`, { stock: 1 });
@@ -233,4 +229,4 @@ createApp({
       await this.loadProducts();
     },
   },
-}).mount("#app");
+});

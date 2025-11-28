@@ -4,8 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lesson Shop</title>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-    <script src="https://kit.fontawesome.com/ec5e76a6c7.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+    <script
+      src="https://kit.fontawesome.com/ec5e76a6c7.js"
+      crossorigin="anonymous"
+    ></script>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -17,11 +20,16 @@
           <i class="fa-solid fa-person-chalkboard"></i>
           <p class="muted">
             Browse, filter, add to cart, and place your order in a few steps.
+          </p>
         </div>
       </header>
 
       <main>
-        <section v-show="currentPage === 'catalog'" class="page page--catalog" aria-label="Catalog">
+        <section
+          v-show="currentPage === 'catalog'"
+          class="page page--catalog"
+          aria-label="Catalog"
+        >
           <form class="search-form" @submit.prevent="searchProducts">
             <input
               v-model="searchTerm"
@@ -31,7 +39,11 @@
               @input="searchProducts"
             />
             <div class="button-group">
-              <button type="button" aria-label="Open cart" @click="goToPage('cart')">
+              <button
+                type="button"
+                aria-label="Open cart"
+                @click="goToPage('cart')"
+              >
                 <i class="fa-solid fa-basket-shopping"></i>
                 Cart Items ({{ cartCount }})
               </button>
@@ -58,8 +70,15 @@
             </select>
           </div>
 
-          <div v-if="activeFilter === 'location'" class="range-filters" aria-label="Location filters">
-            <label v-for="locationOption in availableLocations" :key="locationOption">
+          <div
+            v-if="activeFilter === 'location'"
+            class="range-filters"
+            aria-label="Location filters"
+          >
+            <label
+              v-for="locationOption in availableLocations"
+              :key="locationOption"
+            >
               <input
                 v-model="selectedLocations"
                 type="checkbox"
@@ -98,7 +117,9 @@
                 <p>{{ product.about }}</p>
                 <p class="muted">Location: {{ product.location }}</p>
                 <p class="muted">Left spaces: {{ product.stock }}</p>
-                <p class="cart-total">${{ Number(product.price || 0).toFixed(2) }}</p>
+                <p class="cart-total">
+                  ${{ Number(product.price || 0).toFixed(2) }}
+                </p>
               </div>
               <button
                 v-if="!cartCounts(product)"
@@ -109,8 +130,16 @@
                 {{ product.stock > 0 ? 'Add to cart' : 'Out of stock' }}
               </button>
               <div v-else class="quantity-stepper" aria-label="Adjust quantity">
-                <button type="button" @click="deleteFromCart(product)" aria-label="Decrease quantity">-</button>
-                <span class="quantity-stepper__value">{{ cartCounts(product) }}</span>
+                <button
+                  type="button"
+                  @click="deleteFromCart(product)"
+                  aria-label="Decrease quantity"
+                >
+                  -
+                </button>
+                <span class="quantity-stepper__value"
+                  >{{ cartCounts(product) }}</span
+                >
                 <button
                   type="button"
                   :disabled="product.stock <= 0"
@@ -122,16 +151,26 @@
               </div>
             </article>
           </section>
-          <p v-if="!filteredProducts.length" class="cart-status">No products match your filters.</p>
+          <p v-if="!filteredProducts.length" class="cart-status">
+            No products match your filters.
+          </p>
         </section>
 
-        <section v-show="currentPage === 'cart'" class="page page--cart" aria-label="Cart">
+        <section
+          v-show="currentPage === 'cart'"
+          class="page page--cart"
+          aria-label="Cart"
+        >
           <div class="summary-header">
             <div>
               <p class="toolbar__label">Your basket</p>
               <h2>Review items</h2>
             </div>
-            <button type="button" aria-label="Show products" @click="goToPage('catalog')">
+            <button
+              type="button"
+              aria-label="Show products"
+              @click="goToPage('catalog')"
+            >
               <i class="fa-solid fa-arrow-left"></i>
               Back to products
             </button>
@@ -142,21 +181,39 @@
           <ul class="cart-list" v-if="cartCount">
             <li v-for="item in cartDetails" :key="item._id">
               <div class="summary-item-left">
-                <img :src="item.imageUrls" :alt="`${item.name} preview`" class="cart-thumb" />
+                <img
+                  :src="item.imageUrls"
+                  :alt="`${item.name} preview`"
+                  class="cart-thumb"
+                />
                 <div>
                   <h3>{{ item.name }}</h3>
-                  <p class="muted">Price: ${{ Number(item.price || 0).toFixed(2) }}</p>
+                  <p class="muted">
+                    Price: ${{ Number(item.price || 0).toFixed(2) }}
+                  </p>
                 </div>
               </div>
               <div class="summary-item-right">
                 <div class="quantity-stepper" aria-label="Adjust quantity">
-                  <button type="button" @click="deleteFromCart(item)" aria-label="Decrease quantity">-</button>
+                  <button
+                    type="button"
+                    @click="deleteFromCart(item)"
+                    aria-label="Decrease quantity"
+                  >
+                    -
+                  </button>
                   <span class="quantity-stepper__value">{{ item.stock }}</span>
-                  <button type="button" @click="increaseCartItem(item)" aria-label="Increase quantity">
+                  <button
+                    type="button"
+                    @click="increaseCartItem(item)"
+                    aria-label="Increase quantity"
+                  >
                     +
                   </button>
                 </div>
-                <span class="cart-total">${{ Number(item.price * item.stock || 0).toFixed(2) }}</span>
+                <span class="cart-total"
+                  >${{ Number(item.price * item.stock || 0).toFixed(2) }}</span
+                >
               </div>
             </li>
           </ul>
@@ -164,16 +221,27 @@
 
           <p class="cart-total">Total: ${{ overallPriceFormatted }}</p>
           <div class="summary-actions">
-            <button class="primary" type="button" :disabled="!cartCount" @click="proceedToDetails">
+            <button
+              class="primary"
+              type="button"
+              :disabled="!cartCount"
+              @click="proceedToDetails"
+            >
               Go to order
             </button>
             <div class="secondary-actions">
-              <button class="ghost" type="button" @click="goToPage('catalog')">Continue shopping</button>
+              <button class="ghost" type="button" @click="goToPage('catalog')">
+                Continue shopping
+              </button>
             </div>
           </div>
         </section>
 
-        <section v-show="currentPage === 'details'" class="page page--details" aria-label="Details">
+        <section
+          v-show="currentPage === 'details'"
+          class="page page--details"
+          aria-label="Details"
+        >
           <h2>Enter your details</h2>
           <section class="details-form">
             <label for="customer-name">Your name</label>
@@ -239,14 +307,24 @@
             ></textarea>
           </section>
           <div class="button-group">
-            <button type="button" :disabled="!isDetailsComplete" @click="reviewOrder">
+            <button
+              type="button"
+              :disabled="!isDetailsComplete"
+              @click="reviewOrder"
+            >
               Save and go to order
             </button>
-            <button type="button" @click="goToPage('cart')">Back to cart</button>
+            <button type="button" @click="goToPage('cart')">
+              Back to cart
+            </button>
           </div>
         </section>
 
-        <section v-show="currentPage === 'summary'" class="page page--summary" aria-label="Summary">
+        <section
+          v-show="currentPage === 'summary'"
+          class="page page--summary"
+          aria-label="Summary"
+        >
           <div class="summary-card">
             <div class="summary-header">
               <div>
@@ -297,14 +375,21 @@
               <ul class="summary-list" v-if="cartCount">
                 <li v-for="item in cartDetails" :key="item._id">
                   <div class="summary-item-left">
-                    <img :src="item.imageUrls" :alt="`${item.name} preview`" class="summary-thumb" />
+                    <img
+                      :src="item.imageUrls"
+                      :alt="`${item.name} preview`"
+                      class="summary-thumb"
+                    />
                     <div>
                       <p class="value">{{ item.name }}</p>
                       <p class="muted">Quantity ×{{ item.stock }}</p>
                     </div>
                   </div>
                   <div class="summary-item-right">
-                    <span class="chip">${{ Number(item.price * item.stock || 0).toFixed(2) }}</span>
+                    <span class="chip"
+                      >${{ Number(item.price * item.stock || 0).toFixed(2)
+                      }}</span
+                    >
                   </div>
                 </li>
               </ul>
@@ -312,14 +397,27 @@
             </div>
 
             <div class="summary-actions">
-              <button class="primary" type="button" @click="postOrder" :disabled="!cartCount">
+              <button
+                class="primary"
+                type="button"
+                @click="postOrder"
+                :disabled="!cartCount"
+              >
                 Place order
               </button>
               <div class="secondary-actions">
-                <button type="button" class="ghost" @click="goToPage('details')">
+                <button
+                  type="button"
+                  class="ghost"
+                  @click="goToPage('details')"
+                >
                   Edit details
                 </button>
-                <button type="button" class="ghost" @click="goToPage('catalog')">
+                <button
+                  type="button"
+                  class="ghost"
+                  @click="goToPage('catalog')"
+                >
                   Continue shopping
                 </button>
               </div>
@@ -327,7 +425,11 @@
           </div>
         </section>
 
-        <section v-show="currentPage === 'success'" class="page page--success" aria-label="Order placed">
+        <section
+          v-show="currentPage === 'success'"
+          class="page page--success"
+          aria-label="Order placed"
+        >
           <div class="summary-card success-card">
             <div class="success-icon">✓</div>
             <h2>Order placed successfully</h2>
@@ -335,11 +437,19 @@
               Thanks for your purchase. A confirmation has been recorded.
             </p>
             <div class="summary-actions">
-              <button class="primary" type="button" @click="goToPage('catalog')">
+              <button
+                class="primary"
+                type="button"
+                @click="goToPage('catalog')"
+              >
                 Back to catalog
               </button>
               <div class="secondary-actions">
-                <button type="button" class="ghost" @click="goToPage('details')">
+                <button
+                  type="button"
+                  class="ghost"
+                  @click="goToPage('details')"
+                >
                   Fill details again
                 </button>
               </div>
