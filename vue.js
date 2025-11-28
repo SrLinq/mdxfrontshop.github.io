@@ -2,26 +2,24 @@ const apiFunc = new ApiFetch();
 
 new Vue({
   el: "#app",
-  data() {
-    return {
-      productsss: [],
-      searchTerm: "",
-      products: [],
-      cart: [],
-      currentPage: "catalog",
-      activeFilter: "all",
-      activeSort: "name-asc",
-      customerName: "",
-      customerPhone: "",
-      customerEmail: "",
-      customerCountry: "",
-      customerCity: "",
-      customerPostcode: "",
-      customerAddress: "",
-      minPrice: 0,
-      maxPrice: 1000,
-      selectedLocations: [],
-    };
+  data: {
+    productsss: [],
+    searchTerm: "",
+    products: [],
+    cart: [],
+    currentPage: "catalog",
+    activeFilter: "all",
+    activeSort: "name-asc",
+    customerName: "",
+    customerPhone: "",
+    customerEmail: "",
+    customerCountry: "",
+    customerCity: "",
+    customerPostcode: "",
+    customerAddress: "",
+    minPrice: 0,
+    maxPrice: 1000,
+    selectedLocations: [],
   },
   async created() {
     await this.loadProducts();
