@@ -161,9 +161,7 @@ new Vue({
         await this.loadProducts();
         return;
       }
-      this.products = await apiFunc.get(
-        `/collection/Lessons/search?search=${term}`
-      );
+      this.products = await apiFunc.get(`/collection/Lessons/search=${term}`);
     },
     goToPage(page) {
       this.currentPage = page;
