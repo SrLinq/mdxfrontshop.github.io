@@ -189,8 +189,13 @@ new Vue({
         price: Number(product.price) || 0,
         imageUrls: product.imageUrls,
       });
-      await apiFunc.put(`/collection/Lessons/${productId}`, { stock: -1 });
-      await this.loadProducts();
+      const updatedProduct = await apiFunc.put(
+        `/collection/Lessons/${productId}`,
+        { stock: -1 }
+      );
+      if (updatedProduct && updatedProduct.stock !== undefined) {
+        product.stock = updatedProduct.stock;
+      }
     },
     async deleteFromCart(product) {
       const productId = product._id;
@@ -198,8 +203,19 @@ new Vue({
       const index = this.cart.findIndex((item) => item._id === productId);
       if (index === -1) return;
       const [removed] = this.cart.splice(index, 1);
-      await apiFunc.put(`/collection/Lessons/${removed._id}`, { stock: 1 });
-      await this.loadProducts();
+      const updatedProduct = await apiFunc.put(
+        `/collection/Lessons/${removed._id}`,
+        { stock: 1 }
+      );
+
+      const productInStore = this.products.find((p) => p._id === removed._id);
+      if (
+        productInStore &&
+        updatedProduct &&
+        updatedProduct.stock !== undefined
+      ) {
+        productInStore.stock = updatedProduct.stock;
+      }
     },
     async increaseCartItem(item) {
       const product = this.products.find((product) => product._id === item._id);
