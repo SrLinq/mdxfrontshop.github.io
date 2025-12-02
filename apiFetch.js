@@ -30,14 +30,6 @@ class ApiFetch {
     return this.handleResponse(response);
   }
 
-  async del(url) {
-    const response = await fetch(`${this.baseUrl}${url}`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-    });
-    return this.handleResponse(response);
-  }
-
   async handleResponse(response) {
     const text = await response.text();
     if (!response.ok) {
@@ -50,6 +42,4 @@ class ApiFetch {
       return text;
     }
   }
-
-
 }
