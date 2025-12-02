@@ -118,7 +118,7 @@
                 <p class="muted">Location: {{ product.location }}</p>
                 <p class="muted">Left spaces: {{ product.stock }}</p>
                 <p class="cart-total">
-                  ${{ Number(product.price || 0).toFixed(2) }}
+                  ${{ Number(product.price || 0).toFixed(2) }} AED
                 </p>
               </div>
               <button
@@ -189,7 +189,7 @@
                 <div>
                   <h3>{{ item.name }}</h3>
                   <p class="muted">
-                    Price: ${{ Number(item.price || 0).toFixed(2) }}
+                    Price: ${{ Number(item.price || 0).toFixed(2) }} AED
                   </p>
                 </div>
               </div>
@@ -212,14 +212,15 @@
                   </button>
                 </div>
                 <span class="cart-total"
-                  >${{ Number(item.price * item.stock || 0).toFixed(2) }}</span
+                  >${{ Number(item.price * item.stock || 0).toFixed(2) }}
+                  AED</span
                 >
               </div>
             </li>
           </ul>
           <p class="cart-status" v-else>Pick a lesson to start checkout.</p>
 
-          <p class="cart-total">Total: ${{ overallPriceFormatted }}</p>
+          <p class="cart-total">Total: ${{ overallPriceFormatted }} AED</p>
           <div class="summary-actions">
             <button
               class="primary"
@@ -331,7 +332,7 @@
                 <p class="toolbar__label">Order review</p>
                 <h2>Your details</h2>
               </div>
-              <span class="tag">Total ${{ overallPriceFormatted }}</span>
+              <span class="tag">Total ${{ overallPriceFormatted }} AED</span>
             </div>
 
             <div class="summary-grid">
@@ -387,8 +388,8 @@
                   </div>
                   <div class="summary-item-right">
                     <span class="chip"
-                      >${{ Number(item.price * item.stock || 0).toFixed(2)
-                      }}</span
+                      >${{ Number(item.price * item.stock || 0).toFixed(2) }}
+                      AED</span
                     >
                   </div>
                 </li>
