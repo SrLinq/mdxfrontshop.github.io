@@ -1,15 +1,18 @@
+// Initialize API fetcher
 const apiFunc = new ApiFetch();
+
+// Initialize Vue instance
 
 new Vue({
   el: "#app",
   data: {
-    productsss: [],
-    searchTerm: "",
-    products: [],
-    cart: [],
-    currentPage: "catalog",
-    activeFilter: "all",
-    activeSort: "name-asc",
+    searchTerm: "", // Search input value
+    products: [], // List of fetched products
+    cart: [], // Shopping cart items
+    currentPage: "catalog", // Current view (catalog, cart, details, summary, success)
+    activeFilter: "all", // Active category filter
+    activeSort: "name-asc", // Active sort order
+    // Customer details
     customerName: "",
     customerPhone: "",
     customerEmail: "",
@@ -17,20 +20,23 @@ new Vue({
     customerCity: "",
     customerPostcode: "",
     customerAddress: "",
-    minPrice: 0,
-    maxPrice: 1000,
-    selectedLocations: [],
+    minPrice: 0, // Price filter min
+    maxPrice: 1000, // Price filter max
+    selectedLocations: [], // Selected location filters
   },
+  // Load products on creation
   async created() {
     await this.loadProducts();
   },
   computed: {
+    // Get unique locations from products
     availableLocations() {
       return Array.from(
         new Set(this.products.map((product) => product.location))
       );
     },
 
+    // Filter and sort products based on user input
     filteredProducts() {
       let products = this.products;
 
@@ -75,6 +81,7 @@ new Vue({
 
       return sorted;
     },
+    // Check if all customer details are valid
     isDetailsComplete() {
       const name = this.customerName.trim();
       const phone = this.customerPhone.trim();
@@ -95,9 +102,11 @@ new Vue({
           phoneRegex.test(phone)
       );
     },
+    // Count items in cart
     cartCount() {
       return this.cart.length;
     },
+    // Message for empty/filled cart
     cartMessage() {
       if (!this.cartCount) {
         return "Your cart is empty.";
@@ -106,6 +115,7 @@ new Vue({
         this.cartCount === 1 ? "" : "s"
       } in the cart.`;
     },
+    // Group identical items in cart
     cartDetails() {
       const grouped = this.cart.reduce((acc, product) => {
         const id = product._id;
@@ -123,6 +133,7 @@ new Vue({
       }, {});
       return Object.values(grouped);
     },
+    // Calculate total price
     overallPrice() {
       return this.cart.reduce((sum, item) => sum + Number(item.price || 0), 0);
     },
@@ -131,11 +142,13 @@ new Vue({
     },
   },
   methods: {
+    // Count specific product in cart
     cartCounts(product) {
       const id = product._id;
       if (!id) return 0;
       return this.cart.filter((item) => item._id === id).length;
     },
+    // Submit order to backend
     async postOrder() {
       if (!this.cartCount || !this.isDetailsComplete) return;
       const order = {
@@ -152,9 +165,11 @@ new Vue({
       await apiFunc.post("/collection/Orders/order", order);
       await this.resetCheckout();
     },
+    // Fetch all products
     async loadProducts() {
       this.products = await apiFunc.get("/collection/Lessons");
     },
+    // Search products by term
     async searchProducts() {
       const term = this.searchTerm.trim();
       if (!term) {
@@ -163,21 +178,25 @@ new Vue({
       }
       this.products = await apiFunc.get(`/collection/Lessons/search?q=${term}`);
     },
+    // Navigate to page
     goToPage(page) {
       this.currentPage = page;
     },
+    // Proceed to details if cart not empty
     proceedToDetails() {
       if (!this.cartCount) {
         return;
       }
       this.goToPage("details");
     },
+    // Review order if details valid
     reviewOrder() {
       if (!this.isDetailsComplete) {
         return;
       }
       this.goToPage("summary");
     },
+    // Add item to cart and update stock
     async addToCart(product) {
       const productId = product._id;
       if (!productId || product.stock <= 0) {
@@ -197,6 +216,7 @@ new Vue({
         product.stock = updatedProduct.stock;
       }
     },
+    // Remove item from cart and restore stock
     async deleteFromCart(product) {
       const productId = product._id;
       if (!productId) return;
@@ -217,11 +237,13 @@ new Vue({
         productInStore.stock = updatedProduct.stock;
       }
     },
+    // Increase item quantity (re-add)
     async increaseCartItem(item) {
       const product = this.products.find((product) => product._id === item._id);
       if (!product || product.stock <= 0) return;
       await this.addToCart(product);
     },
+    // Reset all state after order
     async resetCheckout() {
       this.cart = [];
       this.customerName = "";

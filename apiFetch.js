@@ -1,8 +1,11 @@
+// ApiFetch class to handle API requests
 class ApiFetch {
   constructor() {
+    // Base URL for API
     this.baseUrl = "https://mdxbackshop.onrender.com";
   }
 
+  // GET request method
   async get(url) {
     const response = await fetch(`${this.baseUrl}${url}`, {
       method: "GET",
@@ -11,6 +14,7 @@ class ApiFetch {
     return this.handleResponse(response);
   }
 
+  // POST request method
   async post(url, data) {
     const response = await fetch(`${this.baseUrl}${url}`, {
       method: "POST",
@@ -21,6 +25,7 @@ class ApiFetch {
     return this.handleResponse(response);
   }
 
+  // PUT request method
   async put(url, data) {
     const response = await fetch(`${this.baseUrl}${url}`, {
       method: "PUT",
